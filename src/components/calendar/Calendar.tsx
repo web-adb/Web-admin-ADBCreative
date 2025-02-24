@@ -12,6 +12,10 @@ import {
 } from "@fullcalendar/core";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
+import { supabase } from "@/lib/supabaseClient";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -20,9 +24,7 @@ interface CalendarEvent extends EventInput {
 }
 
 const Calendar: React.FC = () => {
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null
-  );
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [eventTitle, setEventTitle] = useState("");
   const [eventStartDate, setEventStartDate] = useState("");
   const [eventEndDate, setEventEndDate] = useState("");
@@ -38,29 +40,26 @@ const Calendar: React.FC = () => {
     Warning: "warning",
   };
 
+  // Fetch events from the database on component mount
   useEffect(() => {
-    // Initialize with some events
-    setEvents([
-      {
-        id: "1",
-        title: "Event Conf.",
-        start: new Date().toISOString().split("T")[0],
-        extendedProps: { calendar: "Danger" },
-      },
-      {
-        id: "2",
-        title: "Meeting",
-        start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Success" },
-      },
-      {
-        id: "3",
-        title: "Workshop",
-        start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
-        end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Primary" },
-      },
-    ]);
+    const fetchEvents = async () => {
+      const { data, error } = await supabase.from("Event").select("*");
+      if (error) {
+        console.error("Error fetching events:", error);
+      } else {
+        setEvents(
+          data.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.startDate,
+            end: event.endDate,
+            extendedProps: { calendar: event.level },
+          }))
+        );
+      }
+    };
+
+    fetchEvents();
   }, []);
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -80,33 +79,65 @@ const Calendar: React.FC = () => {
     openModal();
   };
 
-  const handleAddOrUpdateEvent = () => {
+  const handleAddOrUpdateEvent = async () => {
     if (selectedEvent) {
       // Update existing event
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === selectedEvent.id
-            ? {
-                ...event,
-                title: eventTitle,
-                start: eventStartDate,
-                end: eventEndDate,
-                extendedProps: { calendar: eventLevel },
-              }
-            : event
-        )
-      );
+      const { error } = await supabase
+        .from("Event")
+        .update({
+          title: eventTitle,
+          startDate: eventStartDate,
+          endDate: eventEndDate,
+          level: eventLevel,
+        })
+        .eq("id", selectedEvent.id);
+
+      if (error) {
+        console.error("Error updating event:", error);
+      } else {
+        setEvents((prevEvents) =>
+          prevEvents.map((event) =>
+            event.id === selectedEvent.id
+              ? {
+                  ...event,
+                  title: eventTitle,
+                  start: eventStartDate,
+                  end: eventEndDate,
+                  extendedProps: { calendar: eventLevel },
+                }
+              : event
+          )
+        );
+      }
     } else {
       // Add new event
-      const newEvent: CalendarEvent = {
-        id: Date.now().toString(),
-        title: eventTitle,
-        start: eventStartDate,
-        end: eventEndDate,
-        allDay: true,
-        extendedProps: { calendar: eventLevel },
-      };
-      setEvents((prevEvents) => [...prevEvents, newEvent]);
+      const { data, error } = await supabase
+        .from("Event")
+        .insert([
+          {
+            title: eventTitle,
+            startDate: eventStartDate,
+            endDate: eventEndDate,
+            level: eventLevel,
+          },
+        ])
+        .select();
+
+      if (error) {
+        console.error("Error adding event:", error);
+      } else {
+        const newEvent = data[0];
+        setEvents((prevEvents) => [
+          ...prevEvents,
+          {
+            id: newEvent.id,
+            title: newEvent.title,
+            start: newEvent.startDate,
+            end: newEvent.endDate,
+            extendedProps: { calendar: newEvent.level },
+          },
+        ]);
+      }
     }
     closeModal();
     resetModalFields();
@@ -121,7 +152,7 @@ const Calendar: React.FC = () => {
   };
 
   return (
-    <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="custom-calendar">
         <FullCalendar
           ref={calendarRef}
