@@ -39,12 +39,6 @@ const navItems: NavItem[] = [
     path: "/calendar",
   },
   {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-
-  {
     name: "Forms",
     icon: <ListIcon />,
     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
@@ -52,14 +46,20 @@ const navItems: NavItem[] = [
   {
     name: "Daftar Anggota",
     icon: <TableIcon />,
-    subItems: [{ name: "List Anggota", path: "/basic-tables", pro: false }],
+    subItems: [
+      { name: "List Anggota", path: "/list-anggota", pro: false },
+      { name: "Tambah Anggota", path: "/tambahkan-anggota", pro: false },
+    ],
   },
   {
-    name: "Pages",
+    name: "Arsip Catatan",
     icon: <PageIcon />,
     subItems: [
       { name: "Blank Page", path: "/blank", pro: false },
       { name: "404 Error", path: "/error-404", pro: false },
+      { name: "Catatan", path: "/arsip-catatan", pro:false },
+      { name: "Buat +", path:"/buat-catatan", pro: false},
+
     ],
   },
   {
@@ -74,6 +74,11 @@ const navItems: NavItem[] = [
       icon: <PaperPlaneIcon />,
       name: "Catatan",
       path: "/catatan",
+    },
+    {
+      icon: <UserCircleIcon />,
+      name: "User Profile",
+      path: "/profile",
     },
 ];
 
