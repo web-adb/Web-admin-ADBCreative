@@ -1,8 +1,5 @@
 "use client";
-import React from "react";
-// import Chart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
-import ChartTab from "../common/ChartTab";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 // Dynamically import the ReactApexChart component
@@ -11,13 +8,56 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export default function StatisticsChart() {
+  const [series, setSeries] = useState([
+    {
+      name: "Events",
+      data: Array(12).fill(0), // Initialize with 0 for each month
+    },
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch event data from API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("/api/events");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const events = await response.json();
+
+        // Count events per month
+        const eventsPerMonth = Array(12).fill(0);
+        events.forEach((event: any) => {
+          const month = new Date(event.startDate).getMonth(); // Get month (0-11)
+          eventsPerMonth[month]++;
+        });
+
+        // Update series data
+        setSeries([
+          {
+            name: "Events",
+            data: eventsPerMonth,
+          },
+        ]);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#465FFF", "#9CB9FF"], // Define line colors
+    colors: ["#465FFF"], // Define line color
     chart: {
       fontFamily: "Outfit, sans-serif",
       height: 310,
@@ -28,9 +68,8 @@ export default function StatisticsChart() {
     },
     stroke: {
       curve: "straight", // Define the line style (straight, smooth, or step)
-      width: [2, 2], // Line width for each dataset
+      width: 2, // Line width
     },
-
     fill: {
       type: "gradient",
       gradient: {
@@ -64,7 +103,7 @@ export default function StatisticsChart() {
     tooltip: {
       enabled: true, // Enable tooltip
       x: {
-        format: "dd MMM yyyy", // Format for x-axis tooltip
+        format: "MMM yyyy", // Format for x-axis tooltip
       },
     },
     xaxis: {
@@ -109,29 +148,24 @@ export default function StatisticsChart() {
     },
   };
 
-  const series = [
-    {
-      name: "Sales",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-    },
-    {
-      name: "Revenue",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-    },
-  ];
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Statistics
+            Event Statistics
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Target you’ve set for each month
+            Number of events organized each month
           </p>
-        </div>
-        <div className="flex items-start w-full gap-3 sm:justify-end">
-          <ChartTab />
         </div>
       </div>
 
