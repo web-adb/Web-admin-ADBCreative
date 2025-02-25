@@ -44,3 +44,12 @@ model Transaction {
   createdAt   DateTime @default(now()) // Waktu dibuat
   updatedAt   DateTime @updatedAt // Waktu terakhir diupdate
 }
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  archived  Boolean  @default(false) // Status arsip (default: false)
+  createdAt DateTime @default(now()) // Waktu dibuat
+  updatedAt DateTime @updatedAt // Waktu terakhir diupdate
+}
