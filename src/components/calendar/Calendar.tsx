@@ -12,10 +12,6 @@ import {
 } from "@fullcalendar/core";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
-import { supabase } from "@/lib/supabaseClient";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -40,23 +36,20 @@ const Calendar: React.FC = () => {
     Warning: "warning",
   };
 
-  // Fetch events from the database on component mount
+  // Fetch events from the API on component mount
   useEffect(() => {
     const fetchEvents = async () => {
-      const { data, error } = await supabase.from("Event").select("*");
-      if (error) {
-        console.error("Error fetching events:", error);
-      } else {
-        setEvents(
-          data.map((event) => ({
-            id: event.id,
-            title: event.title,
-            start: event.startDate,
-            end: event.endDate,
-            extendedProps: { calendar: event.level },
-          }))
-        );
-      }
+      const response = await fetch("/api/events");
+      const data = await response.json();
+      setEvents(
+        data.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          start: event.startDate,
+          end: event.endDate,
+          extendedProps: { calendar: event.level },
+        }))
+      );
     };
 
     fetchEvents();
@@ -80,30 +73,34 @@ const Calendar: React.FC = () => {
   };
 
   const handleAddOrUpdateEvent = async () => {
+    const eventData = {
+      title: eventTitle,
+      startDate: eventStartDate,
+      endDate: eventEndDate,
+      level: eventLevel,
+    };
+
     if (selectedEvent) {
       // Update existing event
-      const { error } = await supabase
-        .from("Event")
-        .update({
-          title: eventTitle,
-          startDate: eventStartDate,
-          endDate: eventEndDate,
-          level: eventLevel,
-        })
-        .eq("id", selectedEvent.id);
+      const response = await fetch("/api/events", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: selectedEvent.id, ...eventData }),
+      });
 
-      if (error) {
-        console.error("Error updating event:", error);
-      } else {
+      if (response.ok) {
+        const updatedEvent = await response.json();
         setEvents((prevEvents) =>
           prevEvents.map((event) =>
             event.id === selectedEvent.id
               ? {
                   ...event,
-                  title: eventTitle,
-                  start: eventStartDate,
-                  end: eventEndDate,
-                  extendedProps: { calendar: eventLevel },
+                  title: updatedEvent.title,
+                  start: updatedEvent.startDate,
+                  end: updatedEvent.endDate,
+                  extendedProps: { calendar: updatedEvent.level },
                 }
               : event
           )
@@ -111,22 +108,16 @@ const Calendar: React.FC = () => {
       }
     } else {
       // Add new event
-      const { data, error } = await supabase
-        .from("Event")
-        .insert([
-          {
-            title: eventTitle,
-            startDate: eventStartDate,
-            endDate: eventEndDate,
-            level: eventLevel,
-          },
-        ])
-        .select();
+      const response = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventData),
+      });
 
-      if (error) {
-        console.error("Error adding event:", error);
-      } else {
-        const newEvent = data[0];
+      if (response.ok) {
+        const newEvent = await response.json();
         setEvents((prevEvents) => [
           ...prevEvents,
           {
@@ -141,6 +132,26 @@ const Calendar: React.FC = () => {
     }
     closeModal();
     resetModalFields();
+  };
+
+  const handleDeleteEvent = async () => {
+    if (selectedEvent) {
+      const response = await fetch("/api/events", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: selectedEvent.id }),
+      });
+
+      if (response.ok) {
+        setEvents((prevEvents) =>
+          prevEvents.filter((event) => event.id !== selectedEvent.id)
+        );
+        closeModal();
+        resetModalFields();
+      }
+    }
   };
 
   const resetModalFields = () => {
@@ -273,6 +284,15 @@ const Calendar: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
+            {selectedEvent && (
+              <button
+                onClick={handleDeleteEvent}
+                type="button"
+                className="flex w-full justify-center rounded-lg border border-red-500 bg-red-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-600 sm:w-auto"
+              >
+                Delete Event
+              </button>
+            )}
             <button
               onClick={closeModal}
               type="button"

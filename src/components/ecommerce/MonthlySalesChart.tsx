@@ -3,7 +3,7 @@ import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import { MoreDotIcon } from "@/icons";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 
 // Dynamically import the ReactApexChart component
@@ -11,7 +11,53 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export default function MonthlySalesChart() {
+interface Event {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  level: string;
+}
+
+export default function MonthlyEventsChart() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Fetch data event dari API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("/api/events");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setEvents(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // Hitung jumlah event per bulan
+  const getMonthlyEventCounts = () => {
+    const monthlyCounts = Array(12).fill(0); // Array untuk 12 bulan, diisi dengan 0
+
+    events.forEach((event) => {
+      const date = new Date(event.startDate);
+      const month = date.getMonth(); // Ambil bulan (0-11)
+      monthlyCounts[month]++; // Tambahkan jumlah event di bulan tersebut
+    });
+
+    return monthlyCounts;
+  };
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -81,23 +127,22 @@ export default function MonthlySalesChart() {
     fill: {
       opacity: 1,
     },
-
     tooltip: {
       x: {
         show: false,
       },
       y: {
-        formatter: (val: number) => `${val}`,
+        formatter: (val: number) => `${val} events`,
       },
     },
   };
+
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: "Events",
+      data: getMonthlyEventCounts(), // Data jumlah event per bulan
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -107,11 +152,19 @@ export default function MonthlySalesChart() {
     setIsOpen(false);
   }
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Sales
+          Monthly Events
         </h3>
 
         <div className="relative inline-block">
