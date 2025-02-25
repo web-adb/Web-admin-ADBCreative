@@ -68,6 +68,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Pemasukan", path: "/tabungan/pemasukan", pro:false },
       { name: "Pengeluaran", path: "/tabungan/pengeluaran", pro:false },
+      { name: "Input Data", path: "/tabungan/input-pemasukan-pengeluaran", pro:false },
     ],
   },
     {
