@@ -33,11 +33,14 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
   },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
-  },
+    {
+      name: "Kalender",
+      icon: <CalenderIcon />,
+      subItems: [
+        { name: "Kalender", path: "/calendar", pro: false },
+        { name: "Tabel Kalender", path: "/calendar/tabel-calendar", pro: false },
+      ],
+    },
   {
     name: "Forms",
     icon: <ListIcon />,
@@ -57,8 +60,8 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Blank Page", path: "/blank", pro: false },
       { name: "404 Error", path: "/error-404", pro: false },
-      { name: "Catatan", path: "/arsip-catatan", pro:false },
-      { name: "Buat +", path:"/buat-catatan", pro: false},
+      { name: "Arsip Catatan", path: "/catatan/arsip", pro:false },
+      { name: "Buat +", path:"/catatan/buat", pro: false},
 
     ],
   },

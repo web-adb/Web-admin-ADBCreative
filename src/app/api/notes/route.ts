@@ -58,3 +58,24 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+// DELETE: Delete a note
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+
+    await prisma.note.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { message: "Catatan berhasil dihapus" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Gagal menghapus catatan" },
+      { status: 500 }
+    );
+  }
+}
