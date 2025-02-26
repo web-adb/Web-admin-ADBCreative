@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    subItems: [{ name: "Konten Utama", path: "/", pro: false }],
   },
     {
       name: "Kalender",
@@ -52,7 +52,7 @@ const navItems: NavItem[] = [
     icon: <TableIcon />,
     subItems: [
       { name: "List Anggota", path: "/list-anggota", pro: false },
-      { name: "Tambah Anggota", path: "/tambahkan-anggota", pro: false },
+      { name: "Tambah Anggota", path: "/tambah-anggota", pro: false },
     ],
   },
   {

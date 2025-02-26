@@ -9,12 +9,11 @@ datasource db {
 
 model Team {
   id          Int      @id @default(autoincrement())
-  userName    String
-  userRole    String
-  userImage   String
-  projectName String
-  teamImages  String[]
-  status      String
+  profileImage String   // Gambar Profile
+  name         String   // Nama
+  major        String   // Jurusan
+  teamDivision String   // Tim / Devisi
+  status       String   // Status (Aktif / Tidak Aktif)
 }
 
 model Event {

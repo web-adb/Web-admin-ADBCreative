@@ -19,30 +19,23 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userName, userRole, userImage, projectName, teamImages, status } =
-      body;
+    const { profileImage, name, major, teamDivision, status } = body;
 
-    if (
-      !userName ||
-      !userRole ||
-      !userImage ||
-      !projectName ||
-      !teamImages ||
-      !status
-    ) {
+    // Validasi semua field harus diisi
+    if (!profileImage || !name || !major || !teamDivision || !status) {
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
       );
     }
 
+    // Membuat data baru di database
     const newTeam = await prisma.team.create({
       data: {
-        userName,
-        userRole,
-        userImage,
-        projectName,
-        teamImages,
+        profileImage,
+        name,
+        major,
+        teamDivision,
         status,
       },
     });
@@ -61,23 +54,23 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get('id'); // Ambil ID dari query parameter
     const body = await request.json();
-    const { userName, userRole, userImage, projectName, teamImages, status } =
-      body;
+    const { profileImage, name, major, teamDivision, status } = body;
 
+    // Validasi ID harus ada
     if (!id) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
+    // Update data di database berdasarkan ID
     const updatedTeam = await prisma.team.update({
       where: { id: Number(id) },
       data: {
-        userName,
-        userRole,
-        userImage,
-        projectName,
-        teamImages,
+        profileImage,
+        name,
+        major,
+        teamDivision,
         status,
       },
     });
@@ -96,17 +89,19 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get('id'); // Ambil ID dari query parameter
 
+    // Validasi ID harus ada
     if (!id) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
+    // Hapus data di database berdasarkan ID
     await prisma.team.delete({
       where: { id: Number(id) },
     });
 
-    return new NextResponse(null, { status: 204 });
+    return new NextResponse(null, { status: 204 }); // Respon sukses tanpa konten
   } catch (error) {
     console.error('Error deleting team:', error);
     return NextResponse.json(

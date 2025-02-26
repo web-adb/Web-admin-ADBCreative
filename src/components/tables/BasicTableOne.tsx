@@ -1,321 +1,135 @@
-'use client';
+'use client'
 import React, { useEffect, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from '../ui/table';
-import Badge from '../ui/badge/Badge';
-import Image from 'next/image';
-import Modal from './Modal';
-import Input from './Input';
-import Button from '../ui/button/Button';
+import Link from 'next/link';
 
 interface Team {
   id: number;
-  userName: string;
-  userRole: string;
-  userImage: string;
-  projectName: string;
-  teamImages: string[];
+  profileImage: string;
+  name: string;
+  major: string;
+  teamDivision: string;
   status: string;
 }
 
-export default function BasicTableOne() {
+const TablePage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // State untuk modal dan form
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-  const [formData, setFormData] = useState<Partial<Team>>({
-    userName: '',
-    userRole: '',
-    userImage: '',
-    projectName: '',
-    teamImages: [],
-    status: '',
-  });
 
   // Fetch data dari API
   useEffect(() => {
-    fetchTeams();
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/team');
+        const data = await response.json();
+        setTeams(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const fetchTeams = async () => {
+  // Fungsi untuk menghapus data
+  const handleDelete = async (id: number) => {
     try {
-      const response = await fetch('/api/team');
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const data = await response.json();
-      setTeams(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle form input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  // Handle form submit (Create/Update)
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const url = selectedTeam
-        ? `/api/team?id=${selectedTeam.id}`
-        : '/api/team';
-      const method = selectedTeam ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error('Failed to save team');
-
-      fetchTeams(); // Refresh data
-      setIsModalOpen(false); // Tutup modal
-      setFormData({}); // Reset form
-      setSelectedTeam(null); // Reset selected team
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // Handle edit team
-  const handleEdit = (team: Team) => {
-    setSelectedTeam(team);
-    setFormData(team);
-    setIsModalOpen(true);
-  };
-
-  // Handle delete team
-  const handleDelete = async () => {
-    if (!selectedTeam) return;
-    try {
-      const response = await fetch(`/api/team?id=${selectedTeam.id}`, {
+      await fetch(`/api/team?id=${id}`, {
         method: 'DELETE',
       });
-
-      if (!response.ok) throw new Error('Failed to delete team');
-
-      fetchTeams(); // Refresh data
-      setIsDeleteModalOpen(false); // Tutup modal
-      setSelectedTeam(null); // Reset selected team
-    } catch (err: any) {
-      setError(err.message);
+      // Refresh data setelah menghapus
+      setTeams(teams.filter((team) => team.id !== id));
+    } catch (error) {
+      console.error('Error deleting data:', error);
     }
   };
 
-  // Handle open delete confirmation modal
-  const openDeleteModal = (team: Team) => {
-    setSelectedTeam(team);
-    setIsDeleteModalOpen(true);
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[900px]">
-          <Table>
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
-              <TableRow>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Anggota
-                </TableCell>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Divisi
-                </TableCell>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Team
-                </TableCell>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Status
-                </TableCell>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {teams.map((team) => (
-                <TableRow key={team.id}>
-                  <TableCell className="px-5 py-4 sm:px-6 text-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 overflow-hidden rounded-full">
-                        <Image
-                          width={40}
-                          height={40}
-                          src={team.userImage}
-                          alt={team.userName}
-                        />
-                      </div>
-                      <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {team.userName}
-                        </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          {team.userRole}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {team.projectName}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <div className="flex -space-x-2">
-                      {team.teamImages.map((img, idx) => (
-                        <div
-                          key={idx}
-                          className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
-                        >
-                          <Image
-                            width={24}
-                            height={24}
-                            src={img}
-                            alt={`Team member ${idx + 1}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <Badge
-                      size="sm"
-                      color={
-                        team.status === 'Active'
-                          ? 'success'
-                          : team.status === 'Pending'
-                          ? 'warning'
-                          : 'error'
-                      }
-                    >
-                      {team.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEdit(team)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="danger"
-                        onClick={() => openDeleteModal(team)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+    <div className="p-6">
+      {/* Widget Berjajar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-blue-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold">Total Anggota</h2>
+          <p className="text-3xl">{teams.length}</p>
+        </div>
+        <div className="bg-green-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold">Aktif</h2>
+          <p className="text-3xl">
+            {teams.filter((team) => team.status === 'Aktif').length}
+          </p>
+        </div>
+        <div className="bg-red-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold">Tidak Aktif</h2>
+          <p className="text-3xl">
+            {teams.filter((team) => team.status === 'Tidak Aktif').length}
+          </p>
         </div>
       </div>
 
-      {/* Modal untuk Create/Update */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={selectedTeam ? 'Edit Team' : 'Add Team'}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="User Name"
-            name="userName"
-            value={formData.userName || ''}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            label="User Role"
-            name="userRole"
-            value={formData.userRole || ''}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            label="User Image URL"
-            name="userImage"
-            value={formData.userImage || ''}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            label="Project Name"
-            name="projectName"
-            value={formData.projectName || ''}
-            onChange={handleInputChange}
-            required
-          />
-          <Input
-            label="Status"
-            name="status"
-            value={formData.status || ''}
-            onChange={handleInputChange}
-            required
-          />
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Save</Button>
-          </div>
-        </form>
-      </Modal>
+      {/* Tombol Tambah Data */}
+      <div className="mb-6">
+        <Link href="/tambah-anggota">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            Tambah Data
+          </button>
+        </Link>
+      </div>
 
-      {/* Modal untuk Delete Confirmation */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete Team"
-      >
-        <p>Are you sure you want to delete this team?</p>
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsDeleteModalOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="button" variant="danger" onClick={handleDelete}>
-            Delete
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Tombol untuk membuka modal tambah data */}
-      <div className="p-4">
-        <Button onClick={() => setIsModalOpen(true)}>Add Team</Button>
+      {/* Tabel Data */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-3 px-4 border-b">Gambar Profile</th>
+              <th className="py-3 px-4 border-b">Nama</th>
+              <th className="py-3 px-4 border-b">Jurusan</th>
+              <th className="py-3 px-4 border-b">Tim / Devisi</th>
+              <th className="py-3 px-4 border-b">Status</th>
+              <th className="py-3 px-4 border-b">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {teams.map((team) => (
+              <tr key={team.id} className="hover:bg-gray-50">
+                <td className="py-3 px-4 border-b">
+                  <img
+                    src={team.profileImage}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full"
+                  />
+                </td>
+                <td className="py-3 px-4 border-b">{team.name}</td>
+                <td className="py-3 px-4 border-b">{team.major}</td>
+                <td className="py-3 px-4 border-b">{team.teamDivision}</td>
+                <td className="py-3 px-4 border-b">
+                  <span
+                    className={`px-2 py-1 rounded-full text-sm ${
+                      team.status === 'Aktif'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {team.status}
+                  </span>
+                </td>
+                <td className="py-3 px-4 border-b">
+                  <Link href={`/edit-anggota/${team.id}`}>
+                    <button className="bg-yellow-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-yellow-600">
+                      Edit
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(team.id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                  >
+                    Hapus
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-}
+};
+
+export default TablePage;
