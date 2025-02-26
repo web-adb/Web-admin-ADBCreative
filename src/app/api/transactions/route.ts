@@ -40,3 +40,34 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// DELETE: Delete a transaction by ID
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json(); // Ambil ID dari body request
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Transaction ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Hapus transaksi dari database
+    await prisma.transaction.delete({
+      where: {
+        id: parseInt(id), // Konversi ID ke number
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Transaction deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete transaction" },
+      { status: 500 }
+    );
+  }
+}

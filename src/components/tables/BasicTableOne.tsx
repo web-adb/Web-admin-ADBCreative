@@ -13,6 +13,7 @@ interface Team {
 
 const TablePage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Fetch data dari API
   useEffect(() => {
@@ -42,6 +43,11 @@ const TablePage: React.FC = () => {
     }
   };
 
+  // Fungsi untuk memfilter data berdasarkan nama
+  const filteredTeams = teams.filter((team) =>
+    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6">
       {/* Widget Berjajar */}
@@ -64,13 +70,15 @@ const TablePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tombol Tambah Data */}
+      {/* Input Pencarian */}
       <div className="mb-6">
-        <Link href="/tambah-anggota">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-            Tambah Data
-          </button>
-        </Link>
+        <input
+          type="text"
+          placeholder="Cari berdasarkan nama..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
       </div>
 
       {/* Tabel Data */}
@@ -87,7 +95,7 @@ const TablePage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {teams.map((team) => (
+            {filteredTeams.map((team) => (
               <tr key={team.id} className="hover:bg-gray-50">
                 <td className="py-3 px-4 border-b">
                   <img

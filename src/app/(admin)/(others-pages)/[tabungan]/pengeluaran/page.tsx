@@ -16,38 +16,81 @@ export default function Pengeluaran() {
   const [expenses, setExpenses] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false); // State untuk menampilkan modal
+  const [selectedId, setSelectedId] = useState<number | null>(null); // State untuk menyimpan ID yang dipilih
 
   // Fetch data transaksi dari API
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch("/api/transactions");
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        // Filter hanya transaksi dengan jenis "expense"
-        const filteredExpenses = data
-          .filter((item: any) => item.type === "expense")
-          .map((item: any) => ({
-            id: item.id,
-            type: item.type,
-            amount: parseFloat(item.amount),
-            description: item.description,
-            date: item.date,
-          }));
-
-        setExpenses(filteredExpenses);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTransactions();
   }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch("/api/transactions");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      // Filter hanya transaksi dengan jenis "expense"
+      const filteredExpenses = data
+        .filter((item: any) => item.type === "expense")
+        .map((item: any) => ({
+          id: item.id,
+          type: item.type,
+          amount: parseFloat(item.amount),
+          description: item.description,
+          date: item.date,
+        }));
+
+      setExpenses(filteredExpenses);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi untuk membuka modal konfirmasi
+  const openDeleteModal = (id: number) => {
+    setSelectedId(id); // Simpan ID yang dipilih
+    setShowModal(true); // Tampilkan modal
+  };
+
+  // Fungsi untuk menutup modal konfirmasi
+  const closeDeleteModal = () => {
+    setShowModal(false); // Sembunyikan modal
+    setSelectedId(null); // Reset ID yang dipilih
+  };
+
+  // Fungsi untuk menghapus transaksi
+  const handleDelete = async () => {
+    if (!selectedId) return; // Jika tidak ada ID yang dipilih, hentikan proses
+
+    try {
+      const response = await fetch("/api/transactions", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: selectedId }), // Kirim ID transaksi yang akan dihapus
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete transaction");
+      }
+
+      // Refresh data setelah menghapus
+      fetchTransactions();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      closeDeleteModal(); // Tutup modal setelah proses selesai
+    }
+  };
+
+  // Hitung total pengeluaran
+  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
 
   // Tampilkan loading state
   if (loading) {
@@ -85,6 +128,9 @@ export default function Pengeluaran() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                     Tanggal
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
@@ -102,13 +148,55 @@ export default function Pengeluaran() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-white/90">
                       {new Date(expense.date).toLocaleDateString("id-ID")}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => openDeleteModal(expense.id)}
+                        className="bg-red-500 text-white px-3 py-1 rounded-full text-sm hover:bg-red-600"
+                      >
+                        Hapus
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* Total Pengeluaran */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg dark:bg-gray-800">
+            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Total Pengeluaran:
+            </h4>
+            <p className="text-2xl font-bold text-red-500">
+              - Rp {totalExpenses.toLocaleString("id-ID")}
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Modal Konfirmasi Hapus */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h3 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h3>
+            <p className="mb-6">Apakah Anda yakin ingin menghapus transaksi ini?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteModal}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
