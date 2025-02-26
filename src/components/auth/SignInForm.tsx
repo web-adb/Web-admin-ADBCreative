@@ -5,8 +5,9 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSignIn, useUser } from "@clerk/nextjs";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,41 +16,48 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { signIn } = useSignIn();
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.push("/");
+    }
+  }, [isSignedIn, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validasi input
     if (!email || !password) {
       setError("Email and password are required");
       return;
     }
 
+    if (!signIn) {
+      setError("Sign-in service is not available.");
+      return;
+    }
+
     try {
-      // Kirim data ke backend
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn.create({
+        identifier: email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Simpan token di localStorage atau cookies
-        localStorage.setItem("token", data.token);
-
-        // Redirect ke dashboard atau halaman lain
+      if (result.status === "complete") {
         router.push("/");
       } else {
-        // Tampilkan pesan error dari backend
-        setError(data.error || "Login failed");
+        setError("Login failed. Please check your credentials.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error during login:", err);
-      setError("An error occurred. Please try again.");
+
+      // Handle single session error
+      if (err.errors?.[0]?.code === "single_session_mode") {
+        setError("You are already signed in. Please sign out first.");
+      } else {
+        setError("An error occurred. Please try again.");
+      }
     }
   };
 
