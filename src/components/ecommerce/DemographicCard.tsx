@@ -1,14 +1,39 @@
 "use client";
-import Image from "next/image";
-
-import CountryMap from "./CountryMap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MoreDotIcon } from "@/icons";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { useUser } from "@clerk/nextjs"; // Import useUser dari Clerk
 
-export default function DemographicCard() {
+export default function LastLoginUsersCard() {
   const [isOpen, setIsOpen] = useState(false);
+  const [lastLoggedInUsers, setLastLoggedInUsers] = useState([]); // State untuk menyimpan daftar pengguna
+  const { user } = useUser(); // Ambil data pengguna saat ini dari Clerk
+
+  // Simpan data pengguna yang login ke dalam list
+  useEffect(() => {
+    if (user) {
+      const userData = {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.primaryEmailAddress?.emailAddress,
+        lastLogin: new Date().toLocaleString(), // Tambahkan waktu login terakhir
+      };
+
+      // Ambil data sebelumnya dari localStorage (jika ada)
+      const storedUsers = JSON.parse(localStorage.getItem("lastLoggedInUsers")) || [];
+
+      // Tambahkan pengguna baru ke awal array
+      const updatedUsers = [userData, ...storedUsers];
+
+      // Batasi array hingga 5 pengguna terakhir
+      const limitedUsers = updatedUsers.slice(0, 5);
+
+      // Simpan ke localStorage dan state
+      localStorage.setItem("lastLoggedInUsers", JSON.stringify(limitedUsers));
+      setLastLoggedInUsers(limitedUsers);
+    }
+  }, [user]);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -23,10 +48,10 @@ export default function DemographicCard() {
       <div className="flex justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Customers Demographic
+            Last Logged In Users
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Number of customer based on country
+            List of users who recently logged in.
           </p>
         </div>
 
@@ -54,77 +79,31 @@ export default function DemographicCard() {
           </Dropdown>
         </div>
       </div>
-      <div className="px-4 py-6 my-6 overflow-hidden border border-gary-200 rounded-2xl bg-gray-50 dark:border-gray-800 dark:bg-gray-900 sm:px-6">
-        <div
-          id="mapOne"
-          className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
-        >
-          <CountryMap />
-        </div>
-      </div>
 
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              <Image
-                width={48}
-                height={48}
-                src="/images/country/country-01.svg"
-                alt="usa"
-                className="w-full"
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                USA
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                2,379 Customers
-              </span>
+      {/* List pengguna yang terakhir login */}
+      <div className="mt-6 space-y-4">
+        {lastLoggedInUsers.map((user) => (
+          <div key={user.id} className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-800">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  {user.fullName?.charAt(0) || "U"}
+                </span>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
+                  {user.fullName}
+                </p>
+                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                  {user.email}
+                </span>
+                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                  Last login: {user.lastLogin}
+                </span>
+              </div>
             </div>
           </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded bg-gray-200 dark:bg-gray-800">
-              <div className="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              79%
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              <Image
-                width={48}
-                height={48}
-                className="w-full"
-                src="/images/country/country-02.svg"
-                alt="france"
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                France
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                589 Customers
-              </span>
-            </div>
-          </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded bg-gray-200 dark:bg-gray-800">
-              <div className="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded bg-brand-500 text-xs font-medium text-white"></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              23%
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

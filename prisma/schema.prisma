@@ -52,3 +52,14 @@ model Note {
   updatedAt DateTime @updatedAt
   id        Int      @id @default(autoincrement())
 }
+
+
+model PodcastProgram {
+  id          Int      @id @default(autoincrement())
+  title       String   // Nama program podcast
+  schedule    DateTime // Jadwal tanggal dan jam
+  host        String   // Nama host
+  source      String   // Nama sumber
+  createdAt   DateTime @default(now()) // Waktu dibuat
+  updatedAt   DateTime @updatedAt // Waktu terakhir diupdate
+}

@@ -23,6 +23,7 @@
     "apexcharts": "^4.3.0",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.2",
+    "date-fns": "^4.1.0",
     "flatpickr": "^4.6.13",
     "jsonwebtoken": "^9.0.2",
     "next": "15.1.3",

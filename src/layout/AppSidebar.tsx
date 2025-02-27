@@ -72,6 +72,7 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Pemasukan", path: "/tabungan/pemasukan", pro:false },
       { name: "Pengeluaran", path: "/tabungan/pengeluaran", pro:false },
+      { name: "Total Transaksi", path: "/tabungan/total", pro:false },
       { name: "Input Data", path: "/tabungan/input-pemasukan-pengeluaran", pro:false },
     ],
   },
@@ -80,6 +81,16 @@ const navItems: NavItem[] = [
       name: "Catatan",
       path: "/catatan",
     },
+
+    {
+      name: "Program Podcast",
+      icon: <TableIcon />,
+      subItems: [
+        { name: "Daftar Podcast", path: "/program-podcast", pro: false },
+        { name: "Tambahkan Podcast", path: "/program-podcast/tambah-program", pro: false },
+      ],
+    },
+
     {
       icon: <UserCircleIcon />,
       name: "User Profile",
