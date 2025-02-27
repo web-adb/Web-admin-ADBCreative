@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Badge from "../ui/badge/Badge";
 import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
+import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+
 
 interface Event {
   id: number;
@@ -72,7 +74,11 @@ export const EcommerceMetrics = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+        <LoadingBall /> {/* Gunakan komponen LoadingBall di sini */}
+      </div>
+    );
   }
 
   if (error) {
@@ -98,7 +104,7 @@ export const EcommerceMetrics = () => {
           </div>
           <Badge color="success">
             <ArrowUpIcon />
-            11.01%
+            Terdaftar Sebagai Anggota
           </Badge>
         </div>
       </div>

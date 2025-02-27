@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { MoreDotIcon } from "@/icons";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+import { ApexOptions } from 'apexcharts'; // Import ApexOptions
 
 // Definisikan tipe data untuk transaksi
 interface Transaction {
@@ -79,7 +81,11 @@ export default function MonthlyTarget() {
 
   // Tampilkan loading state
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-16">
+        <LoadingBall /> {/* Gunakan komponen LoadingBall di sini */}
+      </div>
+    );
   }
 
   // Tampilkan error state
@@ -120,7 +126,7 @@ export default function MonthlyTarget() {
             fontWeight: "600",
             offsetY: -40,
             color: "#1D2939",
-            formatter: function (val) {
+            formatter: function (val: number) {
               return val.toFixed(2) + "%"; // Format progress dengan 2 desimal
             },
           },
@@ -152,10 +158,10 @@ export default function MonthlyTarget() {
         <div className="flex justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Monthly Target
+            Target Bulanan
             </h3>
             <p className="mt-1 font-normal text-gray-500 text-theme-sm dark:text-gray-400">
-              Target you’ve set for each month
+            Target yang telah Anda tetapkan untuk setiap bulan
             </p>
           </div>
           <div className="relative inline-block">
@@ -195,12 +201,11 @@ export default function MonthlyTarget() {
           </div>
 
           <span className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-[95%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
-            +10%
+            Target Presentase
           </span>
         </div>
         <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-          You earn Rp {data?.revenue.toLocaleString("id-ID")} today, it&apos;s
-          higher than last month. Keep up your good work!
+        Total tabungan yang tersimpan adalah Rp {data?.revenue.toLocaleString("id-ID")} 
         </p>
       </div>
 

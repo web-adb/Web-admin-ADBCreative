@@ -8,6 +8,8 @@ import {
   TableRow,
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
+import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+
 
 // Definisikan tipe data untuk transaksi
 interface Transaction {
@@ -46,7 +48,11 @@ export default function SavingsLog() {
 
   // Tampilkan loading state
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-16">
+        <LoadingBall /> {/* Gunakan komponen LoadingBall di sini */}
+      </div>
+    );
   }
 
   // Tampilkan error state
@@ -62,10 +68,10 @@ export default function SavingsLog() {
       <div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Savings Log
+            Catatan Tabungan
           </h3>
           <p className="mt-1 font-normal text-gray-500 text-theme-sm dark:text-gray-400">
-            List of all your income and expense transactions.
+            Daftar semua transaksi pemasukan dan pengeluaran Anda.
           </p>
         </div>
 
@@ -90,7 +96,7 @@ export default function SavingsLog() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Description
+                Deskripsi
               </TableCell>
               <TableCell
                 isHeader
@@ -102,13 +108,13 @@ export default function SavingsLog() {
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Amount
+                Jumlah
               </TableCell>
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Date
+                Tanggal
               </TableCell>
             </TableRow>
           </TableHeader>

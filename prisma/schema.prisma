@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Team {
-  id          Int      @id @default(autoincrement())
-  profileImage String   // Gambar Profile
-  name         String   // Nama
-  major        String   // Jurusan
-  teamDivision String   // Tim / Devisi
-  status       String   // Status (Aktif / Tidak Aktif)
+  id           Int    @id @default(autoincrement())
+  status       String
+  major        String
+  name         String
+  profileImage String
+  teamDivision String
 }
 
 model Event {
@@ -53,13 +53,12 @@ model Note {
   id        Int      @id @default(autoincrement())
 }
 
-
 model PodcastProgram {
-  id          Int      @id @default(autoincrement())
-  title       String   // Nama program podcast
-  schedule    DateTime // Jadwal tanggal dan jam
-  host        String   // Nama host
-  source      String   // Nama sumber
-  createdAt   DateTime @default(now()) // Waktu dibuat
-  updatedAt   DateTime @updatedAt // Waktu terakhir diupdate
+  id        Int      @id @default(autoincrement())
+  title     String
+  schedule  DateTime
+  host      String
+  source    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

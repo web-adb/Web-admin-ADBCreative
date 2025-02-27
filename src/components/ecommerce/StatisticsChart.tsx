@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+import { ApexOptions } from "apexcharts"; // Impor ApexOptions
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -149,7 +151,11 @@ export default function StatisticsChart() {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-36">
+        <LoadingBall /> {/* Gunakan komponen LoadingBall di sini */}
+      </div>
+    );
   }
 
   if (error) {
@@ -161,10 +167,10 @@ export default function StatisticsChart() {
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
         <div className="w-full">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Event Statistics
+            Statistik Acara
           </h3>
           <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Number of events organized each month
+            Jumlah acara yang diadakan setiap bulan
           </p>
         </div>
       </div>

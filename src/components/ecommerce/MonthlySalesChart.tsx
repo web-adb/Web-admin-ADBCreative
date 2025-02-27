@@ -5,6 +5,8 @@ import { MoreDotIcon } from "@/icons";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
+import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -153,7 +155,11 @@ export default function MonthlyEventsChart() {
   }
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+        <LoadingBall /> {/* Gunakan komponen LoadingBall di sini */}
+      </div>
+    );
   }
 
   if (error) {
@@ -164,7 +170,7 @@ export default function MonthlyEventsChart() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Events
+          Acara Bulanan
         </h3>
 
         <div className="relative inline-block">
