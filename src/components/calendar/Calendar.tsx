@@ -79,7 +79,7 @@ const Calendar: React.FC = () => {
       endDate: eventEndDate,
       level: eventLevel,
     };
-
+  
     if (selectedEvent) {
       // Update existing event
       const response = await fetch("/api/events", {
@@ -89,7 +89,7 @@ const Calendar: React.FC = () => {
         },
         body: JSON.stringify({ id: selectedEvent.id, ...eventData }),
       });
-
+  
       if (response.ok) {
         const updatedEvent = await response.json();
         setEvents((prevEvents) =>
@@ -115,7 +115,7 @@ const Calendar: React.FC = () => {
         },
         body: JSON.stringify(eventData),
       });
-
+  
       if (response.ok) {
         const newEvent = await response.json();
         setEvents((prevEvents) => [
@@ -128,6 +128,22 @@ const Calendar: React.FC = () => {
             extendedProps: { calendar: newEvent.level },
           },
         ]);
+  
+        // Create a notification after adding the event
+        const notificationResponse = await fetch("/api/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `New event added: ${newEvent.title}`,
+            type: "event",
+          }),
+        });
+  
+        if (!notificationResponse.ok) {
+          console.error("Failed to create notification");
+        }
       }
     }
     closeModal();

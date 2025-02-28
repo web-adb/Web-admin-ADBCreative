@@ -1,34 +1,28 @@
-"use client";
+// Pemasukan.tsx
+'use client'
+import { useState, useEffect } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import React, { useState, useEffect } from "react";
 
-// Definisikan tipe data untuk transaksi
 interface Transaction {
   id: number;
   type: "income" | "expense";
   amount: number;
   description: string;
-  date: string; // Format: YYYY-MM-DD
+  date: string;
 }
 
 export default function Pemasukan() {
-  // State untuk menyimpan daftar transaksi
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // State untuk form input
   const [formData, setFormData] = useState({
     type: "income" as "income" | "expense",
     amount: "",
     description: "",
-    date: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
+    date: new Date().toISOString().split("T")[0],
   });
-
-  // State untuk notifikasi
   const [showNotification, setShowNotification] = useState(false);
 
-  // Fetch data transaksi dari API
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -37,8 +31,6 @@ export default function Pemasukan() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-
-        // Pastikan data sesuai dengan tipe Transaction
         const formattedData = data.map((item: any) => ({
           id: item.id,
           type: item.type,
@@ -46,7 +38,6 @@ export default function Pemasukan() {
           description: item.description,
           date: item.date,
         }));
-
         setTransactions(formattedData);
       } catch (err: any) {
         setError(err.message);
@@ -58,7 +49,6 @@ export default function Pemasukan() {
     fetchTransactions();
   }, []);
 
-  // Handle perubahan input pada form
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -69,7 +59,6 @@ export default function Pemasukan() {
     });
   };
 
-  // Handle submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -81,7 +70,7 @@ export default function Pemasukan() {
         },
         body: JSON.stringify({
           ...formData,
-          amount: parseFloat(formData.amount), // Konversi ke number
+          amount: parseFloat(formData.amount),
         }),
       });
 
@@ -90,9 +79,20 @@ export default function Pemasukan() {
       }
 
       const newTransaction = await response.json();
-      setTransactions([newTransaction, ...transactions]); // Tambahkan transaksi baru ke daftar
+      setTransactions([newTransaction, ...transactions]);
 
-      // Reset form
+      // Send notification
+      await fetch("/api/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `New transaction added: ${formData.description}`,
+          type: "transaction",
+        }),
+      });
+
       setFormData({
         type: "income",
         amount: "",
@@ -100,15 +100,13 @@ export default function Pemasukan() {
         date: new Date().toISOString().split("T")[0],
       });
 
-      // Tampilkan notifikasi
       setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000); // Sembunyikan notifikasi setelah 3 detik
+      setTimeout(() => setShowNotification(false), 3000);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  // Tampilkan loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -117,7 +115,6 @@ export default function Pemasukan() {
     );
   }
 
-  // Tampilkan error state
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">

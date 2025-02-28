@@ -78,8 +78,8 @@ const navItems: NavItem[] = [
   },
     {
       icon: <PaperPlaneIcon />,
-      name: "Catatan",
-      path: "/catatan",
+      name: "Log Notifikasi",
+      path: "/notifications",
     },
 
     {

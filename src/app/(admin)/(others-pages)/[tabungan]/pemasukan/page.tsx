@@ -68,6 +68,7 @@ export default function PemasukanTabel() {
     if (!selectedId) return; // Jika tidak ada ID yang dipilih, hentikan proses
 
     try {
+      // Hapus transaksi
       const response = await fetch("/api/transactions", {
         method: "DELETE",
         headers: {
@@ -79,6 +80,18 @@ export default function PemasukanTabel() {
       if (!response.ok) {
         throw new Error("Failed to delete transaction");
       }
+
+      // Kirim notifikasi setelah transaksi berhasil dihapus
+      await fetch("/api/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: "Transaksi masuk berhasil dihapus",
+          type: "transaction",
+        }),
+      });
 
       // Refresh data setelah menghapus
       fetchTransactions();
