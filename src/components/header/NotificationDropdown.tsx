@@ -47,6 +47,9 @@ export default function NotificationDropdown() {
     setNotifying(false);
   };
 
+  // Potong array notifications hingga 10 item saja
+  const limitedNotifications = notifications.slice(0, 10);
+
   return (
     <div className="relative">
       <button
@@ -82,7 +85,7 @@ export default function NotificationDropdown() {
       >
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-gray-700">
           <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Notification
+            Pusat Notifikasi
           </h5>
           <button
             onClick={toggleDropdown}
@@ -105,21 +108,15 @@ export default function NotificationDropdown() {
           </button>
         </div>
         <ul className="flex flex-col h-auto overflow-y-auto custom-scrollbar">
-          {notifications.map((notification) => (
+          {limitedNotifications.map((notification) => (
             <li key={notification.id}>
               <DropdownItem
                 onItemClick={closeDropdown}
                 className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5"
               >
-                <span className="relative block w-full h-10 rounded-full z-1 max-w-10">
-                  <Image
-                    width={40}
-                    height={40}
-                    src="/images/user/user-02.jpg"
-                    alt="User"
-                    className="w-full overflow-hidden rounded-full"
-                  />
-                  <span className="absolute bottom-0 right-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white bg-success-500 dark:border-gray-900"></span>
+                <span className="relative flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-lg">
+                  !
+                  <span className="absolute bottom-0 right-0 z-10 h-2.5 w-2.5 rounded-full border-[1.5px] border-white bg-green-500 dark:border-gray-900"></span>
                 </span>
 
                 <span className="block">
@@ -138,10 +135,10 @@ export default function NotificationDropdown() {
           ))}
         </ul>
         <Link
-          href="/"
+          href="/notifications"
           className="block px-4 py-2 mt-3 text-sm font-medium text-center text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
         >
-          View All Notifications
+          Lihat Semua Notifikasi
         </Link>
       </Dropdown>
     </div>
