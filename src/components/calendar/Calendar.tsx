@@ -105,6 +105,22 @@ const Calendar: React.FC = () => {
               : event
           )
         );
+  
+        // Create a notification after updating the event
+        const notificationResponse = await fetch("/api/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `Acara Diperbarui: ${updatedEvent.title}`,
+            type: "event",
+          }),
+        });
+  
+        if (!notificationResponse.ok) {
+          console.error("Failed to create notification");
+        }
       }
     } else {
       // Add new event
@@ -136,7 +152,7 @@ const Calendar: React.FC = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            message: `New event added: ${newEvent.title}`,
+            message: `Acara Baru Ditambahkan: ${newEvent.title}`,
             type: "event",
           }),
         });
@@ -159,11 +175,28 @@ const Calendar: React.FC = () => {
         },
         body: JSON.stringify({ id: selectedEvent.id }),
       });
-
+  
       if (response.ok) {
         setEvents((prevEvents) =>
           prevEvents.filter((event) => event.id !== selectedEvent.id)
         );
+  
+        // Create a notification after deleting the event
+        const notificationResponse = await fetch("/api/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `Acara Dihapus: ${selectedEvent.title}`,
+            type: "event",
+          }),
+        });
+  
+        if (!notificationResponse.ok) {
+          console.error("Failed to create notification");
+        }
+  
         closeModal();
         resetModalFields();
       }

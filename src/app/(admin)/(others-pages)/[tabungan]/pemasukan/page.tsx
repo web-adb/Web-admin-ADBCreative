@@ -18,6 +18,7 @@ export default function PemasukanTabel() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false); // State untuk menampilkan modal
   const [selectedId, setSelectedId] = useState<number | null>(null); // State untuk menyimpan ID yang dipilih
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // State untuk menyimpan urutan pengurutan
 
   // Fetch data transaksi dari API
   useEffect(() => {
@@ -49,6 +50,18 @@ export default function PemasukanTabel() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fungsi untuk mengurutkan data berdasarkan jumlah pemasukan
+  const sortIncomes = (order: "asc" | "desc") => {
+    const sortedIncomes = [...incomes].sort((a, b) => {
+      if (order === "asc") {
+        return a.amount - b.amount; // Urutan dari terkecil ke terbesar
+      } else {
+        return b.amount - a.amount; // Urutan dari terbesar ke terkecil
+      }
+    });
+    setIncomes(sortedIncomes);
   };
 
   // Fungsi untuk membuka modal konfirmasi
@@ -123,6 +136,24 @@ export default function PemasukanTabel() {
           <h3 className="mb-4 font-semibold text-gray-800 text-theme-xl dark:text-white/90 sm:text-2xl">
             Daftar Pemasukan
           </h3>
+
+          {/* Tombol Filter */}
+          <div className="mb-4">
+            <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Urutkan berdasarkan jumlah:
+            </label>
+            <select
+              value={sortOrder}
+              onChange={(e) => {
+                setSortOrder(e.target.value as "asc" | "desc");
+                sortIncomes(e.target.value as "asc" | "desc");
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+            >
+              <option value="desc">Paling Banyak</option>
+              <option value="asc">Paling Sedikit</option>
+            </select>
+          </div>
 
           {/* Tabel Pemasukan */}
           <div className="overflow-x-auto">
