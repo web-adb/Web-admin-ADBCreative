@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from "react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { FaWallet, FaMoneyBillWave, FaClipboard, FaCalendarAlt } from "react-icons/fa";
 
 interface Transaction {
   id: number;
@@ -127,75 +128,88 @@ export default function Pemasukan() {
       <PageBreadcrumb pageTitle="Tabungan" />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 px-5 py-7 xl:px-10 xl:py-12">
         <div className="mx-auto w-full max-w-[630px]">
-          <h3 className="mb-8 text-4xl font-bold text-gray-800 dark:text-white/90 text-center">
-            Catatan Pemasukan dan Pengeluaran
-          </h3>
-
           {/* Form Input */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-12">
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Jenis
-                  </label>
+          <div className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-xl p-8 mb-12">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Jenis Transaksi */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Jenis Transaksi
+                </label>
+                <div className="relative">
+                  <FaWallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                   <select
                     name="type"
                     value={formData.type}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   >
                     <option value="income">Pemasukan</option>
                     <option value="expense">Pengeluaran</option>
                   </select>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Jumlah
-                  </label>
+              {/* Jumlah */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Jumlah
+                </label>
+                <div className="relative">
+                  <FaMoneyBillWave className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                   <input
                     type="number"
                     name="amount"
                     value={formData.amount}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    placeholder="Masukkan jumlah"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     required
                   />
                 </div>
               </div>
 
-              <div className="mt-6">
+              {/* Deskripsi */}
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Deskripsi
                 </label>
-                <input
-                  type="text"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  required
-                />
+                <div className="relative">
+                  <FaClipboard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Masukkan deskripsi"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="mt-6">
+              {/* Tanggal */}
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Tanggal
                 </label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  required
-                />
+                <div className="relative">
+                  <FaCalendarAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    required
+                  />
+                </div>
               </div>
 
+              {/* Tombol Submit */}
               <button
                 type="submit"
-                className="mt-8 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all transform hover:scale-105 active:scale-95"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-4 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-600 transition-all transform hover:scale-105 active:scale-95"
               >
                 Tambah Catatan
               </button>
