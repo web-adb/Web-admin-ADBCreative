@@ -122,20 +122,22 @@ export default function TanyaAI() {
   return (
     <div className="dark:from-gray-900 dark:to-gray-800 p-3">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-900 dark:text-blue-200">
-            Tanya AI
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Tanyakan apa saja, dan AI akan membantu Anda.
-          </p>
-        </header>
-
         {/* Chat Container */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
           {/* Chat History */}
           <div className="h-[400px] overflow-y-auto mb-4 space-y-4 scrollbar-hide">
+            {/* Header */}
+            {messages.length === 0 && (
+              <header className="text-center mb-8">
+                <h1 className="text-4xl font-bold text-blue-900 dark:text-blue-200">
+                  Tanya AI
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Tanyakan apa saja, dan AI akan membantu Anda.
+                </p>
+              </header>
+            )}
+
             {messages.map((message, index) => (
               <div
                 key={index}
