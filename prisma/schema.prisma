@@ -65,7 +65,7 @@ model PodcastProgram {
 
 model Notification {
   id        Int      @id @default(autoincrement())
-  message   String   // Pesan notifikasi
-  type      String   // Tipe notifikasi (misalnya: "transaction", "system", dll)
-  createdAt DateTime @default(now()) // Tanggal dan waktu notifikasi dibuat
+  message   String
+  type      String
+  createdAt DateTime @default(now())
 }

@@ -126,8 +126,8 @@ export default function Pemasukan() {
   return (
     <div>
       <PageBreadcrumb pageTitle="Tabungan" />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 px-5 py-7 xl:px-10 xl:py-12">
-        <div className="mx-auto w-full max-w-[630px]">
+      <div className="min-h-screen bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 px-5 py-7 xl:px-10">
+        <div className="mx-auto w-full">
           {/* Form Input */}
           <div className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-xl p-8 mb-12">
             <form onSubmit={handleSubmit} className="space-y-6">

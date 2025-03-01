@@ -18,6 +18,7 @@ import {
   UserCircleIcon,
   PencilIcon,
   PaperPlaneIcon,
+  ChatIcon,
 } from "../icons/index";
 
 type NavItem = {
@@ -95,6 +96,11 @@ const navItems: NavItem[] = [
       icon: <UserCircleIcon />,
       name: "User Profile",
       path: "/profile",
+    },
+    {
+      icon: <ChatIcon />,
+      name: "Tanya AI",
+      path: "/tanya-AI",
     },
 ];
 
