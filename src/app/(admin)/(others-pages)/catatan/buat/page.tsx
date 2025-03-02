@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { FaMagic, FaSpinner, FaUndo, FaHistory, FaCheck, FaTimes } from "react-icons/fa";
+import { FaMagic, FaSpinner, FaUndo, FaCheck, FaTimes } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function Catatan() {
@@ -19,6 +19,19 @@ export default function Catatan() {
 
   // Inisialisasi Gemini
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
+
+  // Simpan data ke localStorage setiap kali ada perubahan
+  useEffect(() => {
+    localStorage.setItem('unsavedNote', JSON.stringify(formData));
+  }, [formData]);
+
+  // Ambil data dari localStorage saat komponen dimount
+  useEffect(() => {
+    const savedNote = localStorage.getItem('unsavedNote');
+    if (savedNote) {
+      setFormData(JSON.parse(savedNote));
+    }
+  }, []);
 
   // Handle perubahan input pada form
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -46,6 +59,7 @@ export default function Catatan() {
 
       const data = await response.json();
       console.log("Note saved:", data);
+      localStorage.removeItem('unsavedNote'); // Hapus data dari localStorage setelah disimpan
     } catch (error) {
       console.error("Error saving note:", error);
     }
@@ -143,6 +157,22 @@ export default function Catatan() {
     }
   };
 
+  // Menampilkan peringatan sebelum menutup halaman jika ada perubahan yang belum disimpan
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (localStorage.getItem('unsavedNote')) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
       <h1 className="text-2xl font-semibold text-gray-800 dark:text-white/90 mb-6">
@@ -153,6 +183,7 @@ export default function Catatan() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          saveNote(formData.title, formData.content);
           alert("Catatan berhasil disimpan!");
         }}
         className="mb-8"
@@ -230,16 +261,6 @@ export default function Catatan() {
               Kembalikan Catatan
             </button>
           )}
-
-          {/* Tombol Lihat Log */}
-          <button
-            type="button"
-            onClick={() => router.push("/log")}
-            className="flex items-center justify-center gap-2 bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
-            <FaHistory />
-            Lihat Log
-          </button>
         </div>
 
         <button

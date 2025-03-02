@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FaPaperPlane, FaSpinner } from "react-icons/fa";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function TanyaAI() {
   const [input, setInput] = useState("");
@@ -52,8 +54,12 @@ export default function TanyaAI() {
         const response = await result.response;
         const text = response.text();
 
-        // Format respons AI
-        const formattedText = formatResponse(text);
+        // Format respons AI menggunakan ReactMarkdown
+        const formattedText = (
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {text}
+          </ReactMarkdown>
+        );
 
         // Tambahkan respons AI ke history chat
         const aiMessage = { text, isUser: false, formattedText };
@@ -74,76 +80,6 @@ export default function TanyaAI() {
         setIsLoading(false);
       }
     }
-  };
-
-  // Fungsi untuk memformat respons AI
-  const formatResponse = (text: string): JSX.Element => {
-    // Pisahkan teks berdasarkan baris baru
-    const lines = text.split("\n");
-
-    // Cek apakah ada tabel dalam respons
-    const tableLines = lines.filter((line) => line.includes("|"));
-    if (tableLines.length > 0) {
-      return (
-        <div className="space-y-2">
-          {renderTable(tableLines)}
-          {lines
-            .filter((line) => !line.includes("|"))
-            .map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
-        </div>
-      );
-    }
-
-    // Default: tampilkan teks biasa
-    return <p>{text}</p>;
-  };
-
-  // Fungsi untuk merender tabel
-  const renderTable = (lines: string[]): JSX.Element => {
-    // Ambil header dan baris data
-    const header = lines[0]
-      .split("|")
-      .map((cell) => cell.trim())
-      .filter((cell) => cell !== "");
-    const rows = lines.slice(2).map((line) =>
-      line
-        .split("|")
-        .map((cell) => cell.trim())
-        .filter((cell) => cell !== "")
-    );
-
-    return (
-      <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-        <thead>
-          <tr>
-            {header.map((cell, index) => (
-              <th
-                key={index}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600"
-              >
-                {cell}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={cellIndex}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600"
-                >
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
   };
 
   return (

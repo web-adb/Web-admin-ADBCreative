@@ -210,37 +210,37 @@ export default function MonthlyTarget() {
       </div>
 
       <div className="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Target
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            Rp {data?.target.toLocaleString("id-ID")}
-          </p>
-        </div>
+  <div>
+    <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+      Target
+    </p>
+    <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+      <span className="text-black">Rp</span> {data?.target.toLocaleString("id-ID")}
+    </p>
+  </div>
 
-        <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+  <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Revenue
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            Rp {data?.revenue.toLocaleString("id-ID")}
-          </p>
-        </div>
+  <div>
+    <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+      Revenue
+    </p>
+    <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+      <span className="text-black">Rp</span> {data?.revenue.toLocaleString("id-ID")}
+    </p>
+  </div>
 
-        <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
+  <div className="w-px bg-gray-200 h-7 dark:bg-gray-800"></div>
 
-        <div>
-          <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
-            Today
-          </p>
-          <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-            Rp {data?.totalIncome.toLocaleString("id-ID")}
-          </p>
-        </div>
-      </div>
+  <div>
+    <p className="mb-1 text-center text-gray-500 text-theme-xs dark:text-gray-400 sm:text-sm">
+      Today
+    </p>
+    <p className="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
+      <span className="text-black">Rp</span> {data?.totalIncome.toLocaleString("id-ID")}
+    </p>
+  </div>
+</div>
     </div>
   );
 }

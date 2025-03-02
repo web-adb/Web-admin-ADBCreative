@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TrashBinIcon } from "@/icons";
 import { PencilIcon } from "@/icons";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Note {
   id: number;
@@ -112,9 +114,17 @@ export default function SemuaCatatan() {
                   </button>
                 </div>
               </div>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              {/* Gunakan komponen kustom untuk menambahkan class */}
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  p: ({ node, ...props }) => (
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400" {...props} />
+                  ),
+                }}
+              >
                 {note.content}
-              </p>
+              </ReactMarkdown>
               <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Dibuat pada:{" "}
                 {new Date(note.createdAt).toLocaleDateString("id-ID", {

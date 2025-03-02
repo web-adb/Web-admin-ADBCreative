@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { FaUser, FaRobot, FaSearch, FaArrowRight, FaTrash, FaCopy } from 'react-icons/fa';
 import Link from 'next/link';
 import debounce from 'lodash.debounce';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Conversation {
   id: string;
@@ -145,7 +147,9 @@ export default function LogAI() {
                   <FaUser className="text-white" />
                 </div>
                 <div className="bg-blue-100 p-3 rounded-lg max-w-[70%] hover:bg-blue-200 transition-colors">
-                  <p className="text-gray-700">{conversation.userInput}</p>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {conversation.userInput}
+                  </ReactMarkdown>
                   <div className="mt-2 flex items-center space-x-2">
                     <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
                       {new Date(conversation.createdAt).toLocaleString()}
@@ -177,7 +181,9 @@ export default function LogAI() {
             {conversation.aiResponse && (
               <div className="flex items-start space-x-2 justify-end">
                 <div className="bg-green-100 p-3 rounded-lg max-w-[70%] hover:bg-green-200 transition-colors">
-                  <p className="text-gray-700">{conversation.aiResponse}</p>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {conversation.aiResponse}
+                  </ReactMarkdown>
                   <div className="mt-2 flex items-center space-x-2">
                     <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                       {new Date(conversation.createdAt).toLocaleString()}
