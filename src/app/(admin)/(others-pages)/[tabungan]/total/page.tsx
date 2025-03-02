@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart, Line } from "recharts"; // Import LineChart dan Line
 
 interface Transaction {
   id: number;
@@ -30,7 +31,7 @@ export default function TransactionsDashboard() {
     return () => darkModeMediaQuery.removeEventListener("change", handleDarkModeChange);
   }, []);
 
-  // Fetch data transaksi dari API
+  // Fetch data transaksi dari API secara berkala
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -42,7 +43,14 @@ export default function TransactionsDashboard() {
       }
     };
 
+    // Ambil data pertama kali
     fetchTransactions();
+
+    // Set interval untuk mengambil data setiap 5 detik
+    const interval = setInterval(fetchTransactions, 5000);
+
+    // Bersihkan interval saat komponen di-unmount
+    return () => clearInterval(interval);
   }, []);
 
   // Hitung total pemasukan, pengeluaran, dan saldo
@@ -63,11 +71,45 @@ export default function TransactionsDashboard() {
     setTotalBalance(income - expense);
   }, [transactions]);
 
-  // Data untuk diagram
-  const chartData = [
+  // Data untuk diagram batang
+  const barChartData = [
     { name: "Pemasukan", total: totalIncome },
     { name: "Pengeluaran", total: totalExpense },
   ];
+
+  // Fungsi untuk mendapatkan rentang tanggal (7 hari terakhir)
+  const getLast7Days = () => {
+    const dates = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      dates.push(date.toLocaleDateString());
+    }
+    return dates;
+  };
+
+  // Filter transaksi untuk 7 hari terakhir
+  const last7DaysTransactions = transactions.filter((transaction) => {
+    const transactionDate = new Date(transaction.date).toLocaleDateString();
+    const last7Days = getLast7Days();
+    return last7Days.includes(transactionDate);
+  });
+
+  // Kelompokkan transaksi berdasarkan tanggal dan hitung total transaksi per hari
+  const groupedTransactions = last7DaysTransactions.reduce((acc, transaction) => {
+    const date = new Date(transaction.date).toLocaleDateString(); // Format tanggal
+    if (!acc[date]) {
+      acc[date] = 0; // Inisialisasi jika tanggal belum ada
+    }
+    acc[date] += transaction.amount; // Jumlahkan transaksi untuk tanggal yang sama
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Format data untuk LineChart (pastikan semua tanggal dalam 7 hari terakhir ada)
+  const lineChartData = getLast7Days().map((date) => ({
+    name: date, // Tanggal
+    total: groupedTransactions[date] || 0, // Total transaksi untuk tanggal tersebut (default 0 jika tidak ada transaksi)
+  }));
 
   // Warna untuk dark mode dan light mode
   const gridColor = isDarkMode ? "#374151" : "#e5e7eb"; // gray-700 untuk dark, gray-200 untuk light
@@ -108,13 +150,13 @@ export default function TransactionsDashboard() {
       </div>
 
       {/* Diagram Batang */}
-      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800">
+      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800 mb-8">
         <h2 className="text-lg font-semibold text-gray-700 mb-4 dark:text-gray-200">
           Perbandingan Pemasukan dan Pengeluaran
         </h2>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
-            data={chartData}
+            data={barChartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -131,6 +173,34 @@ export default function TransactionsDashboard() {
             <Legend />
             <Bar dataKey="total" fill={barColor} name="Total" />
           </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* LineChart */}
+      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800">
+        <h2 className="text-lg font-semibold text-gray-700 mb-4 dark:text-gray-200">
+          Grafik Transaksi Harian (7 Hari Terakhir)
+        </h2>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            width={600}
+            height={300}
+            data={lineChartData}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+          >
+            <Line type="monotone" dataKey="total" stroke="#8884d8" />
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <XAxis dataKey="name" stroke={axisColor} />
+            <YAxis stroke={axisColor} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: tooltipBgColor,
+                borderColor: gridColor,
+                borderRadius: "8px",
+                color: tooltipTextColor,
+              }}
+            />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>

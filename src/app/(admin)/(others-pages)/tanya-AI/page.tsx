@@ -14,11 +14,34 @@ export default function TanyaAI() {
     process.env.NEXT_PUBLIC_GEMINI_API_KEY as string
   );
 
+  // Fungsi untuk menyimpan percakapan ke database
+  const saveConversation = async (userInput: string, aiResponse: string) => {
+    try {
+      const response = await fetch("/api/conversation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userInput, aiResponse }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save conversation");
+      }
+
+      const data = await response.json();
+      console.log("Conversation saved:", data);
+    } catch (error) {
+      console.error("Error saving conversation:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
       // Tambahkan pesan pengguna ke history chat
-      setMessages((prev) => [...prev, { text: input, isUser: true }]);
+      const userMessage = { text: input, isUser: true };
+      setMessages((prev) => [...prev, userMessage]);
       setInput("");
       setIsLoading(true);
 
@@ -33,7 +56,11 @@ export default function TanyaAI() {
         const formattedText = formatResponse(text);
 
         // Tambahkan respons AI ke history chat
-        setMessages((prev) => [...prev, { text, isUser: false, formattedText }]);
+        const aiMessage = { text, isUser: false, formattedText };
+        setMessages((prev) => [...prev, aiMessage]);
+
+        // Simpan percakapan ke database
+        await saveConversation(input, text);
       } catch (error) {
         console.error("Error fetching response from Gemini:", error);
         setMessages((prev) => [
