@@ -71,8 +71,8 @@ model Notification {
 }
 
 model Conversation {
-  id        Int      @id @default(autoincrement())
-  userInput String
+  id         Int      @id @default(autoincrement())
+  userInput  String
   aiResponse String
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 }

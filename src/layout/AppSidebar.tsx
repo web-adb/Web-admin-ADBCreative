@@ -17,8 +17,10 @@ import {
   TableIcon,
   UserCircleIcon,
   PencilIcon,
-  PaperPlaneIcon,
+  InfoIcon,
   ChatIcon,
+  AudioIcon,
+  DollarLineIcon,
 } from "../icons/index";
 
 type NavItem = {
@@ -43,14 +45,14 @@ const navItems: NavItem[] = [
         { name: "Event Terdekat", path: "/calendar/event-terdekat", pro: false },
       ],
     },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
+  // {
+  //   name: "Forms",
+  //   icon: <ListIcon />,
+  //   subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+  // },
   {
     name: "Daftar Anggota",
-    icon: <TableIcon />,
+    icon: <PencilIcon />,
     subItems: [
       { name: "List Anggota", path: "/list-anggota", pro: false },
       { name: "Tambah Anggota", path: "/tambah-anggota", pro: false },
@@ -68,7 +70,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon : <PencilIcon />,
+    icon : <DollarLineIcon />,
     name : "Tabungan",
     subItems: [
       { name: "Pemasukan", path: "/tabungan/pemasukan", pro:false },
@@ -77,61 +79,70 @@ const navItems: NavItem[] = [
       { name: "Input Data", path: "/tabungan/input-pemasukan-pengeluaran", pro:false },
     ],
   },
-    {
-      icon: <PaperPlaneIcon />,
-      name: "Log Notifikasi",
-      path: "/notifications",
-    },
 
     {
       name: "Program Podcast",
-      icon: <TableIcon />,
+      icon: <AudioIcon />,
       subItems: [
         { name: "Daftar Podcast", path: "/program-podcast", pro: false },
         { name: "Tambahkan Podcast", path: "/program-podcast/tambah-program", pro: false },
       ],
     },
 
-    {
-      icon: <UserCircleIcon />,
-      name: "User Profile",
-      path: "/profile",
-    },
-    {
-      icon: <ChatIcon />,
-      name: "Tanya AI",
-      path: "/tanya-AI",
-    },
+
+    // {
+    //   icon: <ChatIcon />,
+    //   name: "Tanya AI",
+    //   path: "/tanya-AI",
+    // },
 ];
 
 const othersItems: NavItem[] = [
+  // {
+  //   icon: <PieChartIcon />,
+  //   name: "Charts",
+  //   subItems: [
+  //     { name: "Line Chart", path: "/line-chart", pro: false },
+  //     { name: "Bar Chart", path: "/bar-chart", pro: false },
+  //   ],
+  // },
+  // {
+  //   icon: <BoxCubeIcon />,
+  //   name: "UI Elements",
+  //   subItems: [
+  //     { name: "Alerts", path: "/alerts", pro: false },
+  //     { name: "Avatar", path: "/avatars", pro: false },
+  //     { name: "Badge", path: "/badge", pro: false },
+  //     { name: "Buttons", path: "/buttons", pro: false },
+  //     { name: "Images", path: "/images", pro: false },
+  //     { name: "Videos", path: "/videos", pro: false },
+  //   ],
+  // },
+  // {
+  //   icon: <PlugInIcon />,
+  //   name: "Authentication",
+  //   subItems: [
+  //     { name: "Sign In", path: "/signin", pro: false },
+  //     { name: "Sign Up", path: "/signup", pro: false },
+  //   ],
+  // },
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
+    icon: <ChatIcon />,
+    name: "Tanya AI",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Buat Percakapan", path: "/tanya-AI", pro: false },
+      { name: "Log", path: "/log-AI", pro: false },
     ],
   },
   {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
+    icon: <InfoIcon />,
+    name: "Log Notifikasi",
+    path: "/notifications",
   },
   {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
+    icon: <UserCircleIcon />,
+    name: "User Profile",
+    path: "/profile",
   },
 ];
 
