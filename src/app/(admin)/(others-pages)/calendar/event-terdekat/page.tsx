@@ -9,6 +9,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 interface Event {
@@ -117,16 +122,14 @@ export default function EventChartPage() {
   const tooltipBgColor = isDarkMode ? "#1f2937" : "#ffffff"; // gray-800 untuk dark, white untuk light
   const tooltipTextColor = isDarkMode ? "#f3f4f6" : "#111827"; // gray-100 untuk dark, gray-900 untuk light
 
-  // Fungsi untuk membuat badge
-  const Badge = ({ children, color }: { children: React.ReactNode; color: string }) => {
-    return (
-      <span
-        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${color}`}
-      >
-        {children}
-      </span>
-    );
-  };
+  // Data untuk card grafik
+  const eventLevelData = [
+    { name: "High", value: events.filter((e) => e.level === "High").length },
+    { name: "Medium", value: events.filter((e) => e.level === "Medium").length },
+    { name: "Low", value: events.filter((e) => e.level === "Low").length },
+  ];
+
+  const COLORS = ["#ef4444", "#f59e0b", "#10b981"]; // Warna untuk pie chart
 
   return (
     <div className="p-6 dark:bg-gray-900">
@@ -166,6 +169,94 @@ export default function EventChartPage() {
         </ResponsiveContainer>
       </div>
 
+      {/* 4 Card dengan Grafik */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Card 1: Pie Chart Tingkat Event */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold mb-4 dark:text-white">Tingkat Event</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={eventLevelData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+                label
+              >
+                {eventLevelData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Card 2: Line Chart Durasi Event */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold mb-4 dark:text-white">Durasi Event</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="month" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="totalDuration"
+                stroke="#3b82f6"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Card 3: Bar Chart Jumlah Event per Bulan */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold mb-4 dark:text-white">Event per Bulan</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="month" stroke={axisColor} />
+              <YAxis stroke={axisColor} />
+              <Tooltip />
+              <Bar dataKey="totalDuration" fill="#10b981" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Card 4: Statistik Event */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold mb-4 dark:text-white">Statistik Event</h4>
+          <div className="space-y-2">
+            <p className="text-sm dark:text-gray-300">
+              Total Event: <span className="font-bold">{events.length}</span>
+            </p>
+            <p className="text-sm dark:text-gray-300">
+              Event Mendatang:{" "}
+              <span className="font-bold">
+                {events.filter((e) => new Date(e.startDate) > new Date()).length}
+              </span>
+            </p>
+            <p className="text-sm dark:text-gray-300">
+              Event Berlangsung:{" "}
+              <span className="font-bold">
+                {
+                  events.filter(
+                    (e) =>
+                      new Date(e.startDate) <= new Date() &&
+                      new Date(e.endDate) >= new Date()
+                  ).length
+                }
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Tabel Data Event */}
       <h2 className="text-xl font-bold mb-4 dark:text-white">Tabel Data Event</h2>
       <div className="overflow-x-auto">
@@ -197,19 +288,13 @@ export default function EventChartPage() {
                     {event.title}
                   </td>
                   <td className="py-3 px-4 border-b dark:border-gray-600">
-                    <Badge color="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                      {new Date(event.startDate).toLocaleDateString("id-ID")}
-                    </Badge>
+                    {new Date(event.startDate).toLocaleDateString("id-ID")}
                   </td>
                   <td className="py-3 px-4 border-b dark:border-gray-600">
-                    <Badge color="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-                      {new Date(event.endDate).toLocaleDateString("id-ID")}
-                    </Badge>
+                    {new Date(event.endDate).toLocaleDateString("id-ID")}
                   </td>
                   <td className="py-3 px-4 border-b dark:border-gray-600">
-                    <Badge color="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">
-                      {duration.toFixed(2)} hari
-                    </Badge>
+                    {duration.toFixed(2)} hari
                   </td>
                   <td className="py-3 px-4 border-b dark:border-gray-600">{event.level}</td>
                 </tr>

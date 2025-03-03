@@ -131,12 +131,12 @@ const othersItems: NavItem[] = [
     name: "Tanya AI",
     subItems: [
       { name: "Buat Percakapan", path: "/tanya-AI", pro: false },
-      { name: "Log", path: "/log-AI", pro: false },
+      { name: "Hasil Percakapan", path: "/log-AI", pro: false },
     ],
   },
   {
     icon: <InfoIcon />,
-    name: "Log Notifikasi",
+    name: "Pusat Notifikasi",
     path: "/notifications",
   },
   {

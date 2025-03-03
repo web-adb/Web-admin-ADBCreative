@@ -98,6 +98,50 @@ export default function EventCalendarTable() {
         Kalender Event
       </h3>
 
+      {/* 4 Card Berwarna */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Card 1: Total Event */}
+        <div className="bg-blue-100 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-blue-800">Total Event</h4>
+          <p className="text-3xl font-bold text-blue-800 mt-2">{events.length}</p>
+          <p className="text-sm text-blue-700">Jumlah event yang tersedia</p>
+        </div>
+
+        {/* Card 2: Event Mendatang */}
+        <div className="bg-green-100 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-green-800">Event Mendatang</h4>
+          <p className="text-3xl font-bold text-green-800 mt-2">
+            {events.filter((event) => new Date(event.startDate) > new Date()).length}
+          </p>
+          <p className="text-sm text-green-700">Event yang akan datang</p>
+        </div>
+
+        {/* Card 3: Event Berlangsung */}
+        <div className="bg-yellow-100 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-yellow-800">Event Berlangsung</h4>
+          <p className="text-3xl font-bold text-yellow-800 mt-2">
+            {
+              events.filter(
+                (event) =>
+                  new Date(event.startDate) <= new Date() &&
+                  new Date(event.endDate) >= new Date()
+              ).length
+            }
+          </p>
+          <p className="text-sm text-yellow-700">Event yang sedang berlangsung</p>
+        </div>
+
+        {/* Card 4: Event Selesai */}
+        <div className="bg-red-100 p-6 rounded-lg shadow-md">
+          <h4 className="text-lg font-semibold text-red-800">Event Selesai</h4>
+          <p className="text-3xl font-bold text-red-800 mt-2">
+            {events.filter((event) => new Date(event.endDate) < new Date()).length}
+          </p>
+          <p className="text-sm text-red-700">Event yang telah selesai</p>
+        </div>
+      </div>
+
+      {/* Tabel Event */}
       {Object.keys(groupedEvents).map((monthYear) => {
         const colorClass = getUniqueColor(monthYear); // Dapatkan warna unik untuk bulan ini
 
