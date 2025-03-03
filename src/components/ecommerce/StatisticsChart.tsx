@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
 import { ApexOptions } from "apexcharts"; // Impor ApexOptions
+import { ErrorCard } from "@/components/Error/ErrorCard"; // Sesuaikan path dengan struktur proyek Anda
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -159,7 +160,11 @@ export default function StatisticsChart() {
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-16">
+        <ErrorCard message={error} /> {/* Gunakan komponen ErrorCard di sini */}
+      </div>
+    );
   }
 
   return (

@@ -9,6 +9,8 @@ import {
 } from "../ui/table";
 import Badge from "../ui/badge/Badge";
 import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+import { ErrorCard } from "@/components/Error/ErrorCard"; // Sesuaikan path dengan struktur proyek Anda
+
 
 
 // Definisikan tipe data untuk transaksi
@@ -57,7 +59,11 @@ export default function SavingsLog() {
 
   // Tampilkan error state
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-16">
+        <ErrorCard message={error} /> {/* Gunakan komponen ErrorCard di sini */}
+      </div>
+    );
   }
 
   // Batasi transaksi yang ditampilkan jika `showAll` false

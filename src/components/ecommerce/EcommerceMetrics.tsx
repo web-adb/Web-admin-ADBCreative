@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Badge from "../ui/badge/Badge";
 import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
-import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
-
+import { LoadingBall } from "@/components/loading/LoadingBall";
+import { ErrorCard } from "@/components/Error/ErrorCard"; // Import komponen ErrorCard
 
 interface Event {
   id: number;
@@ -82,7 +82,7 @@ export const EcommerceMetrics = () => {
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <ErrorCard message={error} />; // Gunakan komponen ErrorCard di sini
   }
 
   return (

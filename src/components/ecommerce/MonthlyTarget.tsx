@@ -6,6 +6,7 @@ import { MoreDotIcon } from "@/icons";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
 import { ApexOptions } from 'apexcharts'; // Import ApexOptions
+import { ErrorCard } from "@/components/Error/ErrorCard"; // Sesuaikan path dengan struktur proyek Anda
 
 // Definisikan tipe data untuk transaksi
 interface Transaction {
@@ -90,7 +91,11 @@ export default function MonthlyTarget() {
 
   // Tampilkan error state
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-16">
+        <ErrorCard message={error} /> {/* Gunakan komponen ErrorCard di sini */}
+      </div>
+    );
   }
 
   // Konfigurasi chart

@@ -6,6 +6,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { LoadingBall } from "@/components/loading/LoadingBall"; // Import komponen LoadingBall
+import { ErrorCard } from "@/components/Error/ErrorCard"; // Sesuaikan path dengan struktur proyek Anda
 
 
 // Dynamically import the ReactApexChart component
@@ -163,7 +164,11 @@ export default function MonthlyEventsChart() {
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+        <ErrorCard message={error} /> {/* Gunakan komponen ErrorCard di sini */}
+      </div>
+    );
   }
 
   return (
