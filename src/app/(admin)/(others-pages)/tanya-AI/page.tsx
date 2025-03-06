@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FaPaperPlane, FaSpinner } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";

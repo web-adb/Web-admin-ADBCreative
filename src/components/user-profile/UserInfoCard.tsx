@@ -5,16 +5,20 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useUser } from "@clerk/nextjs"; // Import useUser dari Clerk
+import { useUser } from "@clerk/nextjs";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const { user } = useUser(); // Ambil data pengguna dari Clerk
-  const [username, setUsername] = useState(user?.username || ""); // State untuk menyimpan username
+  const { user } = useUser();
+  const [username, setUsername] = useState(user?.username || "");
 
   const handleSave = async () => {
+    if (!user) {
+      console.error("User is not defined.");
+      return;
+    }
+
     try {
-      // Simpan perubahan username ke Clerk
       await user.update({
         username: username,
       });
@@ -39,7 +43,7 @@ export default function UserInfoCard() {
                 Username
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.username || "No username"} {/* Tampilkan username dari Clerk */}
+                {user?.username || "No username"}
               </p>
             </div>
 
@@ -48,7 +52,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.primaryEmailAddress?.emailAddress || "No email"} {/* Tampilkan email dari Clerk */}
+                {user?.primaryEmailAddress?.emailAddress || "No email"}
               </p>
             </div>
           </div>
@@ -99,8 +103,7 @@ export default function UserInfoCard() {
                     <Label>Username</Label>
                     <Input
                       type="text"
-                      value={username} // Gunakan state untuk nilai input
-                      onChange={(e) => setUsername(e.target.value)} // Update state saat input berubah
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                 </div>
