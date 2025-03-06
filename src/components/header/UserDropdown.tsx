@@ -35,7 +35,7 @@ export default function UserDropdown() {
           <Image
             width={44}
             height={44}
-            src={user?.imageUrl || "/images/user/owner.jpg"} // Gunakan foto profil pengguna jika ada
+            src={user?.imageUrl || ""} // Gunakan foto profil pengguna jika ada
             alt="User"
           />
         </span>
@@ -71,7 +71,7 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {user?.fullName || "User"} {/* Tampilkan nama lengkap pengguna */}
+            {user?.username || "User"} {/* Tampilkan nama lengkap pengguna */}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
             {user?.primaryEmailAddress?.emailAddress || "user@example.com"} {/* Tampilkan email pengguna */}
