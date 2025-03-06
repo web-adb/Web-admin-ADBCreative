@@ -58,17 +58,17 @@ const navItems: NavItem[] = [
       { name: "Tambah Anggota", path: "/tambah-anggota", pro: false },
     ],
   },
-  {
-    name: "Arsip Catatan",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-      { name: "Arsip Catatan", path: "/catatan/arsip", pro:false },
-      { name: "Buat +", path:"/catatan/buat", pro: false},
+  // {
+  //   name: "Arsip Catatan",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     { name: "Blank Page", path: "/blank", pro: false },
+  //     { name: "404 Error", path: "/error-404", pro: false },
+  //     { name: "Arsip Catatan", path: "/catatan/arsip", pro:false },
+  //     { name: "Buat +", path:"/catatan/buat", pro: false},
 
-    ],
-  },
+  //   ],
+  // },
   {
     icon : <DollarLineIcon />,
     name : "Tabungan",
@@ -80,14 +80,14 @@ const navItems: NavItem[] = [
     ],
   },
 
-    {
-      name: "Program Podcast",
-      icon: <AudioIcon />,
-      subItems: [
-        { name: "Daftar Podcast", path: "/program-podcast", pro: false },
-        { name: "Tambahkan Podcast", path: "/program-podcast/tambah-program", pro: false },
-      ],
-    },
+    // {
+    //   name: "Program Podcast",
+    //   icon: <AudioIcon />,
+    //   subItems: [
+    //     { name: "Daftar Podcast", path: "/program-podcast", pro: false },
+    //     { name: "Tambahkan Podcast", path: "/program-podcast/tambah-program", pro: false },
+    //   ],
+    // },
 
 
     // {

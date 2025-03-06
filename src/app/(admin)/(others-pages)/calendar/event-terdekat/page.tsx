@@ -14,7 +14,9 @@ import {
   PieChart,
   Pie,
   Cell,
+  TooltipProps,
 } from "recharts";
+import { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
 
 interface Event {
   id: number;
@@ -144,7 +146,8 @@ export default function EventChartPage() {
             <XAxis dataKey="month" stroke={axisColor} />
             <YAxis stroke={axisColor} />
             <Tooltip
-              content={({ payload }: { payload: any }) => {
+              content={(props: TooltipProps<ValueType, NameType>) => {
+                const { payload } = props;
                 if (payload && payload.length > 0) {
                   const data = payload[0].payload;
                   return (
