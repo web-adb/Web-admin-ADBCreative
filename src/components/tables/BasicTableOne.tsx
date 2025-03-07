@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 interface Team {
   id: number;
@@ -14,6 +14,11 @@ interface Team {
 const TablePage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filterMajor, setFilterMajor] = useState<string>('');
+  const [filterStatus, setFilterStatus] = useState<string>('');
+  const [filterDivision, setFilterDivision] = useState<string>('');
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
   // Fetch data dari API
   useEffect(() => {
@@ -43,9 +48,56 @@ const TablePage: React.FC = () => {
     }
   };
 
-  // Fungsi untuk memfilter data berdasarkan nama
+  // Fungsi untuk membuka modal edit
+  const openEditModal = (team: Team) => {
+    setSelectedTeam(team);
+    setEditModalOpen(true);
+  };
+
+  // Fungsi untuk menutup modal edit
+  const closeEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedTeam(null);
+  };
+
+  // Fungsi untuk menyimpan perubahan edit
+  const handleEdit = async () => {
+    if (!selectedTeam) return;
+
+    try {
+      const response = await fetch(`/api/team?id=${selectedTeam.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(selectedTeam),
+      });
+
+      if (!response.ok) {
+        throw new Error('Gagal mengupdate data');
+      }
+
+      const updatedTeam = await response.json();
+
+      // Update data di state
+      setTeams((prevTeams) =>
+        prevTeams.map((team) =>
+          team.id === updatedTeam.id ? updatedTeam : team
+        )
+      );
+
+      closeEditModal();
+    } catch (error) {
+      console.error('Error updating team:', error);
+    }
+  };
+
+  // Fungsi untuk memfilter data berdasarkan nama, jurusan, status, dan tim/devisi
   const filteredTeams = teams.filter((team) =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+    team.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (filterMajor ? team.major === filterMajor : true) &&
+    (filterStatus ? team.status === filterStatus : true) &&
+    (filterDivision ? team.teamDivision === filterDivision : true)
   );
 
   return (
@@ -70,15 +122,53 @@ const TablePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Input Pencarian */}
+      {/* Input Pencarian dan Filter */}
       <div className="mb-6">
         <input
           type="text"
           placeholder="Cari berdasarkan nama..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md"
+          className="w-full p-2 border border-gray-300 rounded-md mb-4"
         />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <select
+            value={filterMajor}
+            onChange={(e) => setFilterMajor(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Semua Jurusan</option>
+            {[...new Set(teams.map((team) => team.major))].map((major, index) => (
+              <option key={index} value={major}>
+                {major}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Semua Status</option>
+            {[...new Set(teams.map((team) => team.status))].map((status, index) => (
+              <option key={index} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+          <select
+            value={filterDivision}
+            onChange={(e) => setFilterDivision(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Semua Tim/Devisi</option>
+            {[...new Set(teams.map((team) => team.teamDivision))].map((division, index) => (
+              <option key={index} value={division}>
+                {division}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Tabel Data */}
@@ -119,16 +209,17 @@ const TablePage: React.FC = () => {
                   </span>
                 </td>
                 <td className="py-3 px-4 border-b">
-                  <Link href={`/edit-anggota/${team.id}`}>
-                    <button className="bg-yellow-500 text-white px-3 py-1 rounded-md mr-2 hover:bg-yellow-600">
-                      Edit
-                    </button>
-                  </Link>
+                  <button
+                    onClick={() => openEditModal(team)}
+                    className="text-blue-500 hover:text-blue-700 mr-2"
+                  >
+                    <FaEdit size={20} />
+                  </button>
                   <button
                     onClick={() => handleDelete(team.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                    className="text-red-500 hover:text-red-700"
                   >
-                    Hapus
+                    <FaTrash size={20} />
                   </button>
                 </td>
               </tr>
@@ -136,6 +227,71 @@ const TablePage: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Edit */}
+      {editModalOpen && selectedTeam && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-md w-1/3">
+            <h2 className="text-xl font-bold mb-4">Edit Anggota</h2>
+            <form>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Nama</label>
+                <input
+                  type="text"
+                  value={selectedTeam.name}
+                  onChange={(e) => setSelectedTeam({ ...selectedTeam, name: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Jurusan</label>
+                <input
+                  type="text"
+                  value={selectedTeam.major}
+                  onChange={(e) => setSelectedTeam({ ...selectedTeam, major: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Tim / Devisi</label>
+                <input
+                  type="text"
+                  value={selectedTeam.teamDivision}
+                  onChange={(e) => setSelectedTeam({ ...selectedTeam, teamDivision: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  value={selectedTeam.status}
+                  onChange={(e) => setSelectedTeam({ ...selectedTeam, status: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="Aktif">Aktif</option>
+                  <option value="Tidak Aktif">Tidak Aktif</option>
+                </select>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                >
+                  Simpan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
