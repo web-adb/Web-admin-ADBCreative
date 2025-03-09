@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaUser, FaChartLine, FaTimes, FaSave, FaFilter, FaSearch } from 'react-icons/fa';
 
 interface Team {
   id: number;
@@ -19,6 +19,7 @@ const TablePage: React.FC = () => {
   const [filterDivision, setFilterDivision] = useState<string>('');
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   // Fetch data dari API
   useEffect(() => {
@@ -100,99 +101,145 @@ const TablePage: React.FC = () => {
     (filterDivision ? team.teamDivision === filterDivision : true)
   );
 
+  // Fungsi untuk mendapatkan inisial nama
+  const getInitials = (name: string) => {
+    const names = name.split(' ');
+    return names.map((n) => n[0]).join('').toUpperCase();
+  };
+
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gray-50 min-h-screen">
       {/* Widget Berjajar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-blue-100 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold">Total Anggota</h2>
-          <p className="text-3xl">{teams.length}</p>
+        <div className="bg-blue-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+          <div className="bg-blue-500 p-3 rounded-full">
+            <FaUser className="text-white text-2xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Total Anggota</h2>
+            <p className="text-3xl">{teams.length}</p>
+          </div>
         </div>
-        <div className="bg-green-100 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold">Aktif</h2>
-          <p className="text-3xl">
-            {teams.filter((team) => team.status === 'Aktif').length}
-          </p>
+        <div className="bg-green-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+          <div className="bg-green-500 p-3 rounded-full">
+            <FaChartLine className="text-white text-2xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Aktif</h2>
+            <p className="text-3xl">
+              {teams.filter((team) => team.status === 'Aktif').length}
+            </p>
+          </div>
         </div>
-        <div className="bg-red-100 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold">Tidak Aktif</h2>
-          <p className="text-3xl">
-            {teams.filter((team) => team.status === 'Tidak Aktif').length}
-          </p>
+        <div className="bg-red-100 p-6 rounded-lg shadow-md flex items-center space-x-4">
+          <div className="bg-red-500 p-3 rounded-full">
+            <FaTimes className="text-white text-2xl" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold">Tidak Aktif</h2>
+            <p className="text-3xl">
+              {teams.filter((team) => team.status === 'Tidak Aktif').length}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Input Pencarian dan Filter */}
       <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Cari berdasarkan nama..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md mb-4"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <select
-            value={filterMajor}
-            onChange={(e) => setFilterMajor(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="relative flex-grow">
+            <input
+              type="text"
+              placeholder="Cari berdasarkan nama..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          </div>
+          <button
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors flex items-center"
           >
-            <option value="">Semua Jurusan</option>
-            {[...new Set(teams.map((team) => team.major))].map((major, index) => (
-              <option key={index} value={major}>
-                {major}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            <option value="">Semua Status</option>
-            {[...new Set(teams.map((team) => team.status))].map((status, index) => (
-              <option key={index} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filterDivision}
-            onChange={(e) => setFilterDivision(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            <option value="">Semua Tim/Devisi</option>
-            {[...new Set(teams.map((team) => team.teamDivision))].map((division, index) => (
-              <option key={index} value={division}>
-                {division}
-              </option>
-            ))}
-          </select>
+            <FaFilter className="mr-2" />
+            Filter
+          </button>
         </div>
+
+        {/* Panel Filter */}
+        {isFilterOpen && (
+          <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Jurusan</label>
+                <select
+                  value={filterMajor}
+                  onChange={(e) => setFilterMajor(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Semua Jurusan</option>
+                  {[...new Set(teams.map((team) => team.major))].map((major, index) => (
+                    <option key={index} value={major}>
+                      {major}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Semua Status</option>
+                  {[...new Set(teams.map((team) => team.status))].map((status, index) => (
+                    <option key={index} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tim / Devisi</label>
+                <select
+                  value={filterDivision}
+                  onChange={(e) => setFilterDivision(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Semua Tim/Devisi</option>
+                  {[...new Set(teams.map((team) => team.teamDivision))].map((division, index) => (
+                    <option key={index} value={division}>
+                      {division}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tabel Data */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+      <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table className="min-w-full">
           <thead>
             <tr className="bg-gray-100">
-              <th className="py-3 px-4 border-b">Gambar Profile</th>
-              <th className="py-3 px-4 border-b">Nama</th>
-              <th className="py-3 px-4 border-b">Jurusan</th>
-              <th className="py-3 px-4 border-b">Tim / Devisi</th>
-              <th className="py-3 px-4 border-b">Status</th>
-              <th className="py-3 px-4 border-b">Aksi</th>
+              <th className="py-3 px-4 border-b text-left">Gambar Profile</th>
+              <th className="py-3 px-4 border-b text-left">Nama</th>
+              <th className="py-3 px-4 border-b text-left">Jurusan</th>
+              <th className="py-3 px-4 border-b text-left">Tim / Devisi</th>
+              <th className="py-3 px-4 border-b text-left">Status</th>
+              <th className="py-3 px-4 border-b text-left">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {filteredTeams.map((team) => (
-              <tr key={team.id} className="hover:bg-gray-50">
+              <tr key={team.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-3 px-4 border-b">
-                  <img
-                    src={team.profileImage}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full"
-                  />
+                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                    {getInitials(team.name)}
+                  </div>
                 </td>
                 <td className="py-3 px-4 border-b">{team.name}</td>
                 <td className="py-3 px-4 border-b">{team.major}</td>
@@ -209,18 +256,26 @@ const TablePage: React.FC = () => {
                   </span>
                 </td>
                 <td className="py-3 px-4 border-b">
-                  <button
-                    onClick={() => openEditModal(team)}
-                    className="text-blue-500 hover:text-blue-700 mr-2"
-                  >
-                    <FaEdit size={20} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(team.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <FaTrash size={20} />
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openEditModal(team)}
+                      className="text-blue-500 hover:text-blue-700 transition-colors relative group"
+                    >
+                      <FaEdit size={20} />
+                      <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Edit
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(team.id)}
+                      className="text-red-500 hover:text-red-700 transition-colors relative group"
+                    >
+                      <FaTrash size={20} />
+                      <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Hapus
+                      </span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -240,7 +295,7 @@ const TablePage: React.FC = () => {
                   type="text"
                   value={selectedTeam.name}
                   onChange={(e) => setSelectedTeam({ ...selectedTeam, name: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
@@ -249,7 +304,7 @@ const TablePage: React.FC = () => {
                   type="text"
                   value={selectedTeam.major}
                   onChange={(e) => setSelectedTeam({ ...selectedTeam, major: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
@@ -258,7 +313,7 @@ const TablePage: React.FC = () => {
                   type="text"
                   value={selectedTeam.teamDivision}
                   onChange={(e) => setSelectedTeam({ ...selectedTeam, teamDivision: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
@@ -266,7 +321,7 @@ const TablePage: React.FC = () => {
                 <select
                   value={selectedTeam.status}
                   onChange={(e) => setSelectedTeam({ ...selectedTeam, status: e.target.value })}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Aktif">Aktif</option>
                   <option value="Tidak Aktif">Tidak Aktif</option>
@@ -276,15 +331,16 @@ const TablePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={closeEditModal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={handleEdit}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
                 >
+                  <FaSave className="inline-block mr-2" />
                   Simpan
                 </button>
               </div>
